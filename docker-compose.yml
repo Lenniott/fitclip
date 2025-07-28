@@ -1,0 +1,10 @@
+# Simple Docker Compose for Fitness Builder UI
+version: '3.8'
+
+services:
+  fitness-builder-ui:
+    build: .
+    container_name: fitness-builder-ui
+    ports:
+      - "8888:8888"
+    restart: unless-stopped 
