@@ -15,4 +15,5 @@ RUN npm run build
 RUN npm install -g serve
 EXPOSE 8888
 
-CMD ["serve", "-s", "dist", "-l", "8888"] 
+# Use explicit host binding for Portainer compatibility
+CMD ["serve", "-s", "dist", "-l", "tcp://0.0.0.0:8888"] 

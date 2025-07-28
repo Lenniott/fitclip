@@ -3,8 +3,20 @@ version: '3.8'
 
 services:
   fitness-builder-ui:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
     container_name: fitness-builder-ui
     ports:
       - "8888:8888"
-    restart: unless-stopped 
+    restart: unless-stopped
+    networks:
+      - fitclip-network
+    environment:
+      - NODE_ENV=production
+      - HOST=0.0.0.0
+      - PORT=8888
+
+networks:
+  fitclip-network:
+    driver: bridge 
