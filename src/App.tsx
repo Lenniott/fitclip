@@ -9,6 +9,7 @@ import './App.css'
 import { ExerciseListPage, RoutineListPage, RoutineDetailPage, VideoPlayer, ExerciseDetailsPage } from './components'
 import { useExercises, useRoutines, useExerciseActions, useRoutineActions } from './hooks/useAPI'
 import { Exercise, Routine } from './types'
+import { fitclipAPI } from './services/api'
 // Import logo as a regular image
 const fitclipLogo = '/src/assets/fitclip.svg'
 
@@ -18,6 +19,7 @@ function App() {
   const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(null);
   const [showVideoPlayer, setShowVideoPlayer] = useState(false);
   const [showExerciseDetails, setShowExerciseDetails] = useState(false);
+  const [filteredExercises, setFilteredExercises] = useState<Exercise[] | null>(null);
 
   // API hooks
   const { data: exercises, loading: exercisesLoading, error: exercisesError, refetch: refetchExercises } = useExercises();
@@ -93,6 +95,58 @@ function App() {
     setSelectedExercise(exercise);
     setShowVideoPlayer(false);
     setShowExerciseDetails(true);
+  };
+
+  const handleBasicSearch = async (query: string) => {
+    console.log('Performing basic search for:', query);
+    
+    if (!query.trim()) {
+      // If query is empty, show all exercises
+      setFilteredExercises(null);
+      refetchExercises();
+      return;
+    }
+
+    // Client-side filtering for basic search
+    const filtered = exercises?.filter(exercise => 
+      exercise.exercise_name.toLowerCase().includes(query.toLowerCase()) ||
+      exercise.how_to?.toLowerCase().includes(query.toLowerCase()) ||
+      exercise.benefits?.toLowerCase().includes(query.toLowerCase()) ||
+      exercise.rounds_reps?.toLowerCase().includes(query.toLowerCase())
+    ) || [];
+
+    setFilteredExercises(filtered);
+    console.log(`Found ${filtered.length} exercises matching "${query}"`);
+  };
+
+  const handleSemanticSearch = async (query: string) => {
+    console.log('Performing semantic search for:', query);
+    
+    if (!query.trim()) {
+      // If query is empty, show all exercises
+      setFilteredExercises(null);
+      refetchExercises();
+      return;
+    }
+
+    try {
+      // Call the semantic search API
+      const searchResults = await fitclipAPI.semanticSearchIds(query, 10);
+      console.log(`Semantic search found ${searchResults.total_found} exercises`);
+      
+      if (searchResults.exercise_ids.length > 0) {
+        // Fetch the full exercise details for the found IDs
+        const semanticExercises = await fitclipAPI.getExercisesByIds(searchResults.exercise_ids);
+        console.log('Semantic search results:', semanticExercises);
+        setFilteredExercises(semanticExercises);
+      } else {
+        console.log('No exercises found for semantic search');
+        setFilteredExercises([]);
+      }
+    } catch (error) {
+      console.error('Semantic search failed:', error);
+      setFilteredExercises([]);
+    }
   };
 
   // Show loading state if any API calls are in progress
@@ -174,7 +228,7 @@ function App() {
           exercise={selectedExercise}
           exercises={currentPage === 'routine-detail' && selectedRoutine ? 
             exercises.filter(ex => selectedRoutine.exercise_ids.includes(ex.id)) : 
-            exercises
+            (filteredExercises || exercises)
           }
           onClose={handleCloseVideoPlayer}
           onViewDetails={handleViewExerciseDetails}
@@ -196,10 +250,12 @@ function App() {
       {/* Page Content */}
       {currentPage === 'exercises' ? (
         <ExerciseListPage
-          exercises={exercises || []}
+          exercises={filteredExercises || exercises || []}
           onExerciseSelect={handleExerciseSelect}
           onBulkDelete={handleExerciseBulkDelete}
           loading={exercisesLoading}
+          onBasicSearch={handleBasicSearch}
+          onSemanticSearch={handleSemanticSearch}
         />
       ) : currentPage === 'routines' ? (
         <RoutineListPage

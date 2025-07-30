@@ -10,6 +10,8 @@ All notable changes to this project will be documented in this file.
   - Swipe left/right to navigate between exercise clips
   - Swipe up to view exercise details
   - Swipe down to return to list
+  - **Desktop Navigation**: Clickable buttons for previous/next/details/back
+  - **Filtered List Support**: Navigation respects search results and filtered lists
   - Keyboard navigation support (arrow keys, escape)
   - Integrates with existing video caching system
   - Loading states and error handling with retry functionality
@@ -20,6 +22,14 @@ All notable changes to this project will be documented in this file.
   - Intelligent cache management (500MB limit, 30-day expiry)
   - Fallback video URLs and error handling
   - Cache statistics and cleanup utilities
+
+- **Search System Implementation** (`src/App.tsx`, `src/components/SearchComponent.tsx`)
+  - **Basic Search**: Client-side filtering by exercise name, how-to, benefits, and rounds/reps
+  - **Semantic Search**: API-powered search using `/exercises/semantic-search-ids` endpoint
+  - **State Management**: Proper filtered results display with fallback to all exercises
+  - **Real-time Results**: Search results update the exercise list immediately
+  - **Toggle Interface**: Switch between basic and semantic search modes
+  - **Loading States**: Visual feedback during search operations
 
 - **API Error Handling & Fallbacks** (`src/hooks/useAPI.ts`)
   - Robust error handling for bulk exercise endpoint failures
@@ -33,6 +43,13 @@ All notable changes to this project will be documented in this file.
   - Docker Compose setup for easy deployment
   - Gzip compression and security headers
   - Health check endpoint and static asset caching
+
+- **PWA Features Removed**
+  - Removed problematic service worker and manifest files
+  - Simplified HTML structure for better development experience
+  - Clean, error-free development environment
+  - Focus on core app functionality without PWA complexity
+  - Added service worker cleanup script to clear cached PWA remnants
 
 - **Mobile-First Responsive Design**
   - All components updated for mobile-first responsive design

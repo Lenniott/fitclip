@@ -9,4 +9,5 @@ export { RoutineListItem } from './RoutineListItem';
 export { ListPage, ExerciseListPage, RoutineListPage } from './ListPage';
 export { RoutineDetailPage } from './RoutineDetailPage';
 export { VideoPlayer } from './VideoPlayer';
-export { ExerciseDetailsPage } from './ExerciseDetailsPage'; 
+export { ExerciseDetailsPage } from './ExerciseDetailsPage';
+export { SearchComponent } from './SearchComponent'; 

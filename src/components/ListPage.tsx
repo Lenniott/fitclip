@@ -6,7 +6,7 @@
 
 import React, { useState } from 'react';
 import { List } from './List';
-import { ExerciseListItem, RoutineListItem } from './index'; // Import specific list items
+import { ExerciseListItem, RoutineListItem, SearchComponent } from './index'; // Import specific list items
 import { Exercise, Routine } from '../types';
 
 interface ListPageProps<T> {
@@ -18,6 +18,8 @@ interface ListPageProps<T> {
   emptyMessage?: string;
   loading?: boolean;
   className?: string;
+  onBasicSearch?: (query: string) => void;
+  onSemanticSearch?: (query: string) => void;
 }
 
 export function ListPage<T extends { id?: string; routine_id?: string }>({
@@ -28,7 +30,9 @@ export function ListPage<T extends { id?: string; routine_id?: string }>({
   onBulkDelete,
   emptyMessage = 'No items found',
   loading = false,
-  className = ''
+  className = '',
+  onBasicSearch,
+  onSemanticSearch
 }: ListPageProps<T>) {
   const [selectionMode, setSelectionMode] = useState(false);
   const [checkedItems, setCheckedItems] = useState<Set<string>>(new Set());
@@ -93,6 +97,16 @@ export function ListPage<T extends { id?: string; routine_id?: string }>({
             </div>
           </div>
 
+          {/* Search Component for Exercise Library */}
+          
+          {title === "Exercise Library" && onBasicSearch && onSemanticSearch && (
+            <SearchComponent
+              onBasicSearch={onBasicSearch}
+              onSemanticSearch={onSemanticSearch}
+              loading={loading}
+            />
+          )}
+
           <List
             items={items}
             renderItem={(item, index) => {
@@ -121,12 +135,16 @@ export function ExerciseListPage({
   exercises,
   onExerciseSelect,
   onBulkDelete,
-  loading = false
+  loading = false,
+  onBasicSearch,
+  onSemanticSearch
 }: {
   exercises: Exercise[];
   onExerciseSelect?: (exercise: Exercise) => void;
   onBulkDelete?: (exerciseIds: string[]) => void;
   loading?: boolean;
+  onBasicSearch?: (query: string) => void;
+  onSemanticSearch?: (query: string) => void;
 }) {
   return (
     <ListPage
@@ -146,6 +164,8 @@ export function ExerciseListPage({
       onBulkDelete={onBulkDelete}
       emptyMessage="No exercises found"
       loading={loading}
+      onBasicSearch={onBasicSearch}
+      onSemanticSearch={onSemanticSearch}
     />
   );
 }
